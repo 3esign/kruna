@@ -1,0 +1,33 @@
+{
+ "base": "https://3esign.github.io/kruna/",
+ "built": "2026-11-11T22:59:57.879Z",
+ "sha256": {
+  "index.html": "472e70d346d1a538b9eb454ecb6b630fcf37ba6f30a7b653d80ecc1a90507b56",
+  "cover.png": "57ec77cd0ed7eec753c83296aec80c2db1cb61911e071321f40a05468a11290d",
+  "icon.png": "23dbe6ae6225a02c18c3c2966cb55926912edaed662b81aa2b63213fc9c5f020",
+  "splash.png": "3e77f8f17f8dc5f75d23ecb32379ba1fbd04e764ca4791a97b4586ce518e7410",
+  "vendor/farcaster-miniapp-sdk-0.3.0.min.js": "417506e635beafa2077b40f52b42f020856f35775c418b876d61f277c6dcc2c9"
+ },
+ "bytes": {
+  "index.html": 24578,
+  "cover.png": 191506,
+  "icon.png": 213266,
+  "splash.png": 17737,
+  "vendor/farcaster-miniapp-sdk-0.3.0.min.js": 667446
+ },
+ "manifestEntry": {
+  "version": "1",
+  "name": "KRUNA",
+  "iconUrl": "https://3esign.github.io/kruna/icon.png",
+  "homeUrl": "https://3esign.github.io/kruna/",
+  "imageUrl": "https://3esign.github.io/kruna/cover.png",
+  "buttonTitle": "Juri krunu 👑",
+  "splashImageUrl": "https://3esign.github.io/kruna/splash.png",
+  "splashBackgroundColor": "#0b0620",
+  "description": "Jedna kruna. Ceo Farcaster je juri.",
+  "primaryCategory": "games",
+  "requiredChains": [
+   "eip155:8453"
+  ]
+ }
+}

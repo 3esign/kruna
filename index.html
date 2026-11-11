@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="sr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>KRUNA</title>
+<meta name="fc:miniapp" content='{"version":"1","imageUrl":"https://3esign.github.io/kruna/cover.png","button":{"title":"Juri krunu 👑","action":{"type":"launch_miniapp","name":"KRUNA","url":"https://3esign.github.io/kruna/","splashImageUrl":"https://3esign.github.io/kruna/splash.png","splashBackgroundColor":"#0b0620"}}}'>
+<meta name="fc:frame" content='{"version":"1","imageUrl":"https://3esign.github.io/kruna/cover.png","button":{"title":"Juri krunu 👑","action":{"type":"launch_frame","name":"KRUNA","url":"https://3esign.github.io/kruna/","splashImageUrl":"https://3esign.github.io/kruna/splash.png","splashBackgroundColor":"#0b0620"}}}'>
+<meta property="og:title" content="KRUNA"><meta property="og:description" content="Jedna kruna. Ceo Farcaster je juri."><meta property="og:image" content="https://3esign.github.io/kruna/cover.png">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{margin:0;height:100%;background:#0b0620;color:#fff;font-family:ui-rounded,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden;touch-action:none}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+.hide{display:none!important}
+#hud{position:fixed;inset:0;pointer-events:none;padding:calc(14px + env(safe-area-inset-top)) 16px}
+#sc{font-size:44px;font-weight:800;line-height:1;text-shadow:0 0 18px #8a63d2}
+#mu{font-size:18px;font-weight:700;color:#ffd24a;margin-top:4px}
+#rv{position:absolute;right:16px;top:calc(14px + env(safe-area-inset-top));text-align:right;font-size:14px;font-weight:700}
+#rv small{display:block;font-weight:600;opacity:.75;margin-top:2px}
+#toast{position:absolute;left:0;right:0;top:30%;text-align:center;font-size:26px;font-weight:800;color:#ffd24a;opacity:0;text-shadow:0 0 14px #ff5fd2}
+#toast.go{animation:t .7s ease-out}
+@keyframes t{0%{opacity:1;transform:scale(.7)}30%{transform:scale(1.15)}100%{opacity:0;transform:translateY(-30px)}}
+#hint{position:absolute;left:0;right:0;bottom:calc(26px + env(safe-area-inset-bottom));text-align:center;font-size:14px;opacity:.7}
+.scr{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;background:linear-gradient(#0b0620cc,#0b062066 40%,#0b0620ee)}
+h1{margin:0;font-size:64px;letter-spacing:6px;font-weight:900;background:linear-gradient(#fff,#ffd24a 55%,#ff5fd2);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 22px #8a63d2)}
+.sub{opacity:.85;font-size:15px;margin-top:-8px;text-align:center}
+.card{width:min(360px,100%);background:#1a0f3acc;border:1px solid #8a63d266;border-radius:18px;padding:12px 14px;backdrop-filter:blur(8px)}
+.card .t{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;opacity:.6;margin-bottom:6px}
+.row{display:flex;justify-content:space-between;padding:4px 0;font-size:15px;font-weight:600}
+.row.me{color:#7df9ff}.row.k{color:#ffd24a;font-size:17px}
+button{pointer-events:auto;width:min(360px,100%);border:0;border-radius:16px;padding:15px;font:inherit;font-size:17px;font-weight:800;color:#160a33;background:linear-gradient(#ffe27a,#ffb52e);box-shadow:0 6px 0 #a86a00,0 0 26px #ffb52e55;cursor:pointer}
+button:active{transform:translateY(4px);box-shadow:0 2px 0 #a86a00}
+button.s{background:#2a1a5a;color:#fff;box-shadow:0 6px 0 #150b33;border:1px solid #8a63d2}
+button.s:active{box-shadow:0 2px 0 #150b33}
+.big{font-size:72px;font-weight:900;line-height:1;text-shadow:0 0 24px #8a63d2}
+.msg{font-size:20px;font-weight:800;text-align:center}
+.dim{font-size:13px;opacity:.7;text-align:center}
+.demo{position:fixed;left:0;right:0;bottom:calc(6px + env(safe-area-inset-bottom));text-align:center;font-size:11px;opacity:.5;pointer-events:none}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="hud" class="hide">
+  <div id="sc">0</div><div id="mu"></div>
+  <div id="rv"></div><div id="toast"></div>
+  <div id="hint">drži levo / desno · ← →</div>
+</div>
+<div id="home" class="scr">
+  <h1>KRUNA</h1><div class="sub">Jedna kruna. Ceo Farcaster je juri.</div>
+  <div class="card" id="chal"></div>
+  <div class="card"><div class="t">Danas · fond <span id="pot"></span></div><div id="board"></div></div>
+  <button id="bRank"></button>
+  <button id="bFree" class="s">Trening · besplatno</button>
+  <div class="dim" id="bal"></div>
+</div>
+<div id="over" class="scr hide">
+  <div class="big" id="oSc"></div>
+  <div class="msg" id="oMsg"></div>
+  <div class="dim" id="oSt"></div>
+  <div class="card"><div class="t">Tabela</div><div id="oBoard"></div></div>
+  <button id="bAgain"></button>
+  <button id="bShare" class="s">Izazovi u castu</button>
+  <button id="bHome" class="s">Nazad</button>
+</div>
+<div class="demo">prototip · protivnici i novčanik su demo, ništa nije onchain</div>
+
+<script id="sim">
+// Deterministička simulacija: samo celi brojevi. Isti seed + isti zapis poteza = isti rezultat na svakom uređaju i serveru.
+const SIM=(()=>{
+const A=65536,U=1024,SP=26*U,ACC=110,VMAX=900,PW=1200,NEAR=1000,SHT=2400;
+function rng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return(t^(t>>>14))>>>0;};}
+function speedAt(z){const zu=z>>10;return 410+Math.min(614,(zu*614/2200)|0)+(zu>2200?((zu-2200)/10)|0:0);}
+function sdiff(a,b){const d=(a-b)&(A-1);return d>A/2?d-A:d;}
+function adist(a,b){const d=sdiff(a,b);return d<0?-d:d;}
+function track(seed){
+  const r=rng((seed^0x9E3779B9)>>>0),rings=[];let c=0;
+  function gen(){
+    const i=rings.length,z=(i+3)*SP;
+    let n=1;const t=r()%10;if(i>=6&&t>=6)n=t>=9?3:2;
+    const per=(A/n)|0;
+    const w=n===1?Math.max(7600,16000-70*i):(per*Math.max(36,55-((i/5)|0))/100)|0;
+    const tb=(SP/speedAt(z))|0,reach=Math.min(30000,(VMAX*tb*40/100)|0);
+    let d=(r()%(2*reach+1))-reach;if(i&&rings[i-1].n>1)d=(d/2)|0;
+    const pc=c;c=(c+d)&(A-1);
+    let amp=0,rate=0,phase=0;
+    if(i>=10&&r()%100<40){amp=1500+r()%Math.min(3500,500+i*40);rate=6+r()%10;phase=r()&1023;}
+    let sh=-1;if(i>=1&&r()%100<75)sh=(pc+(d>>1)+(r()%9001)-4500)&(A-1);
+    rings.push({z,n,per,w,c,amp,rate,phase,sh});
+  }
+  return{ring(i){while(rings.length<=i)gen();return rings[i];}};
+}
+function center(R,t){if(!R.amp)return R.c;const ph=(t*R.rate+R.phase)&1023,tri=ph<512?ph-256:768-ph;return(R.c+((tri*R.amp)>>8))&(A-1);}
+function gapDist(R,p,t){const d=((p-center(R,t))&(A-1))%R.per;return Math.min(d,R.per-d);}
+function mult(S){return 1+Math.min(7,(S.streak/3)|0);}
+function start(seed){return{seed,tr:track(seed),t:0,p:0,v:0,z:0,k:0,shDone:false,score:0,streak:0,shards:0,near:0,best:1,dead:false,fx:0,col:{}};}
+function step(S,d){
+  S.fx=0;if(S.dead)return;
+  if(d){S.v+=d*ACC;if(S.v*d<0)S.v+=d*ACC;}else S.v=(S.v*13/16)|0;
+  if(S.v>VMAX)S.v=VMAX;if(S.v<-VMAX)S.v=-VMAX;
+  S.p=(S.p+S.v)&(A-1);S.t++;S.z+=speedAt(S.z);
+  for(;;){
+    const R=S.tr.ring(S.k);
+    if(!S.shDone){
+      if(S.z<R.z-SP/2)break;
+      S.shDone=true;
+      if(R.sh>=0){if(adist(S.p,R.sh)<=SHT){S.shards++;S.streak++;S.col[S.k]=1;S.score+=25*mult(S);S.fx|=2;}else{S.streak=0;S.fx|=8;}}
+    }
+    if(S.z<R.z)break;
+    const dist=gapDist(R,S.p,S.t),m=(R.w>>1)-PW;
+    if(dist>m){S.dead=true;S.fx|=16;break;}
+    if(dist>m-NEAR){S.streak++;S.near++;S.score+=15*mult(S);S.fx|=4;}
+    S.score+=10*mult(S);if(mult(S)>S.best)S.best=mult(S);
+    S.k++;S.shDone=false;S.fx|=1;
+  }
+}
+function run(seed,ev,cap){const S=start(seed);let i=0,d=0;cap=cap||60*1200;while(!S.dead&&S.t<cap){while(i<ev.length&&ev[i][0]<=S.t)d=ev[i++][1];step(S,d);}return S;}
+function enc(ev){let s='',l=0;for(const e of ev){s+=(e[0]-l).toString(36)+'LNR'[e[1]+1];l=e[0];}return s;}
+function dec(s){const ev=[];let l=0,m;const re=/([0-9a-z]+)([LNR])/g;while((m=re.exec(s))){l+=parseInt(m[1],36);ev.push([l,'LNR'.indexOf(m[2])-1]);}return ev;}
+// Autopilot: demo protivnici i provera prohodnosti staze.
+function nearestGap(R,cc,from){let dd=((cc-from)&(A-1))%R.per;if(dd>R.per>>1)dd-=R.per;return from+dd;}
+function policy(S,M,r){
+  const R=S.tr.ring(S.k);
+  if(M.k!==S.k){M.k=S.k;const E=M.e0+((S.k*M.e1/100)|0);M.err=E>0?(r()%(2*E+1))-E:0;}
+  const sp=speedAt(S.z),tt=((R.z-S.z)/sp)|0,cc=center(R,S.t+tt);
+  let tgt=nearestGap(R,cc,S.p)+M.err;
+  if(!S.shDone&&R.sh>=0){const gs=nearestGap(R,cc,R.sh),need=adist(gs&(A-1),R.sh)-((R.w>>1)-PW)+600,tk=((SP/2)/sp)|0;if(need<VMAX*tk*M.greed/100)tgt=R.sh+(M.err>>1);}
+  const e=sdiff(tgt&(A-1),S.p)-4*S.v;return e>250?1:e<-250?-1:0;
+}
+function bot(seed,e0,e1,greed,bs,cap){const S=start(seed),r=rng(bs),M={k:-1,e0,e1,greed},ev=[];let d=0;cap=cap||60*600;
+  while(!S.dead&&S.t<cap){const nd=policy(S,M,r);if(nd!==d){d=nd;ev.push([S.t,d]);}step(S,d);}return{S,ev};}
+return{A,U,SP,VMAX,PW,rng,speedAt,sdiff,adist,track,center,start,step,run,enc,dec,policy,bot,mult};
+})();
+if(typeof module!=='undefined')module.exports=SIM;
+</script>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id),Q=new URLSearchParams(location.search);
+const cv=$('c'),gl=cv.getContext('webgl2',{antialias:true,alpha:false});
+if(!gl){document.body.innerHTML='<p style="padding:30px">Ovaj uređaj nema WebGL2.</p>';return;}
+// ---------- renderer: jedna instancirana kocka ----------
+const VS=`#version 300 es
+layout(location=0)in vec3 aP;layout(location=1)in vec3 aN;layout(location=2)in vec4 m0;layout(location=3)in vec4 m1;layout(location=4)in vec4 m2;layout(location=5)in vec4 m3;layout(location=6)in vec4 aC;layout(location=7)in float aE;
+uniform mat4 uVP;out vec3 vN;out vec4 vC;out float vE;out float vD;out vec3 vL;
+void main(){mat4 M=mat4(m0,m1,m2,m3);vec4 w=M*vec4(aP,1.);vec3 s=vec3(dot(m0.xyz,m0.xyz),dot(m1.xyz,m1.xyz),dot(m2.xyz,m2.xyz));vN=normalize(mat3(M)*(aN/s));vC=aC;vE=aE;vL=aP;vec4 c=uVP*w;vD=c.w;gl_Position=c;}`;
+const FS=`#version 300 es
+precision highp float;in vec3 vN;in vec4 vC;in float vE;in float vD;in vec3 vL;uniform vec3 uFog;out vec4 o;
+void main(){float df=max(dot(vN,normalize(vec3(.3,.7,.6))),0.)*.65+.35;vec3 a=abs(vL)*2.;float e=max(max(min(a.x,a.y),min(a.y,a.z)),min(a.x,a.z));float ed=smoothstep(.84,.98,e);
+vec3 col=vC.rgb*mix(df,1.,vE)+vC.rgb*ed*.7+vec3(ed*.15);float f=1.-exp(-vD*vD*.00007);o=vec4(mix(col,uFog,f),vC.a);}`;
+function sh(t,s){const x=gl.createShader(t);gl.shaderSource(x,s);gl.compileShader(x);if(!gl.getShaderParameter(x,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(x));return x;}
+const pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,VS));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(pr);gl.useProgram(pr);
+const uVP=gl.getUniformLocation(pr,'uVP'),uFog=gl.getUniformLocation(pr,'uFog');
+const cube=[];[[0,1,2],[1,2,0],[2,0,1]].forEach(([a,b,c])=>[-1,1].forEach(s=>{const q=[[-1,-1],[1,-1],[1,1],[-1,-1],[1,1],[-1,1]];q.forEach(([u,v])=>{const p=[0,0,0],n=[0,0,0];p[a]=s*.5;p[b]=u*.5*s;p[c]=v*.5;n[a]=s;cube.push(...p,...n);});}));
+const vao=gl.createVertexArray();gl.bindVertexArray(vao);
+gl.bindBuffer(gl.ARRAY_BUFFER,gl.createBuffer());gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(cube),gl.STATIC_DRAW);
+gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,24,0);gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,3,gl.FLOAT,false,24,12);
+const MAX=6000,ST=21,I=new Float32Array(MAX*ST),ib=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,ib);gl.bufferData(gl.ARRAY_BUFFER,I.byteLength,gl.DYNAMIC_DRAW);
+[[2,4,0],[3,4,16],[4,4,32],[5,4,48],[6,4,64],[7,1,80]].forEach(([l,s,o])=>{gl.enableVertexAttribArray(l);gl.vertexAttribPointer(l,s,gl.FLOAT,false,ST*4,o);gl.vertexAttribDivisor(l,1);});
+gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+let n=0;
+function inst(phi,r,z,sx,sy,sz,c,a,e,beta=0,tilt=0,ox=0,oy=0,oz=0){
+  if(n>=MAX)return;const o=n*ST,cp=Math.cos(phi),sp=Math.sin(phi),po=phi+tilt,co=Math.cos(po),so=Math.sin(po),cb=Math.cos(beta),sb=Math.sin(beta);
+  I[o]=co*cb*sx;I[o+1]=so*cb*sx;I[o+2]=-sb*sx;I[o+3]=0;I[o+4]=-so*sy;I[o+5]=co*sy;I[o+6]=0;I[o+7]=0;I[o+8]=co*sb*sz;I[o+9]=so*sb*sz;I[o+10]=cb*sz;I[o+11]=0;
+  I[o+12]=sp*r+co*ox-so*oy;I[o+13]=-cp*r+so*ox+co*oy;I[o+14]=z+oz;I[o+15]=1;I[o+16]=c[0];I[o+17]=c[1];I[o+18]=c[2];I[o+19]=a;I[o+20]=e;n++;
+}
+function persp(fy,as,nr,fr){const f=1/Math.tan(fy/2);return[f/as,0,0,0,0,f,0,0,0,0,(fr+nr)/(nr-fr),-1,0,0,2*fr*nr/(nr-fr),0];}
+function lookAt(e,t,roll){let z=[e[0]-t[0],e[1]-t[1],e[2]-t[2]];const l=Math.hypot(...z);z=z.map(v=>v/l);const up=[Math.sin(roll),Math.cos(roll),0];
+  let x=[up[1]*z[2]-up[2]*z[1],up[2]*z[0]-up[0]*z[2],up[0]*z[1]-up[1]*z[0]];const lx=Math.hypot(...x);x=x.map(v=>v/lx);const y=[z[1]*x[2]-z[2]*x[1],z[2]*x[0]-z[0]*x[2],z[0]*x[1]-z[1]*x[0]];
+  const d=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];return[x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-d(x,e),-d(y,e),-d(z,e),1];}
+function mul(a,b){const o=new Array(16);for(let c=0;c<4;c++)for(let r=0;r<4;r++){let s=0;for(let k=0;k<4;k++)s+=a[k*4+r]*b[c*4+k];o[c*4+r]=s;}return o;}
+function hsl(h,s,l){const f=k0=>{const k=(k0+h/30)%12,a=s*Math.min(l,1-l);return l-a*Math.max(-1,Math.min(k-3,9-k,1));};return[f(0),f(8),f(4)];}
+function resize(){const d=Math.min(2,devicePixelRatio||1);cv.width=innerWidth*d|0;cv.height=innerHeight*d|0;}
+addEventListener('resize',resize);resize();
+
+// ---------- zvuk ----------
+let ac=null;
+function beep(f,d,type='sine',v=.12,f2){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;if(f2)o.frequency.exponentialRampToValueAtTime(f2,ac.currentTime+d);g.gain.value=v;g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g).connect(ac.destination);o.start();o.stop(ac.currentTime+d);}catch(e){}}
+
+// ---------- stanje, tabela, demo ekonomija ----------
+const dt0=new Date(),DAY=dt0.getUTCFullYear()*10000+(dt0.getUTCMonth()+1)*100+dt0.getUTCDate();
+const TICKET=100,SPLIT=[70,20,10];
+let me={name:'ti'},sdk=null;
+let store={day:DAY,bal:1000,best:null,tries:0,pot:70*41};
+try{const s=JSON.parse(localStorage.getItem('kruna1'));if(s){store.bal=s.bal;if(s.day===DAY)store=s;}}catch(e){}
+const save=()=>{try{localStorage.setItem('kruna1',JSON.stringify(store));}catch(e){}};
+const bots=[['@vega.demo',2000,3000,45],['@orion.demo',2500,4000,40],['@lyra.demo',3000,6000,30],['@atlas.demo',3500,9000,15]].map(([name,e0,e1,g],i)=>{const b=SIM.bot(DAY,e0,e1,g,DAY+i*7919+1);return{name,score:b.S.score,ev:b.ev};});
+let chal=null;
+if(Q.get('r')&&Q.get('s')){const seed=+Q.get('s')>>>0,ev=SIM.dec(Q.get('r'));chal={seed,name:(Q.get('n')||'@frend').slice(0,24),ev,score:SIM.run(seed,ev).score};} // rezultat se računa iz zapisa, ne veruje se linku
+function board(){const b=bots.slice();if(store.best)b.push({name:me.name,score:store.best.score,ev:SIM.dec(store.best.rep),me:1});return b.sort((x,y)=>y.score-x.score);}
+const esc=s=>String(s).replace(/[<>&"]/g,'');
+function boardHtml(){return board().map((e,i)=>`<div class="row ${e.me?'me':''} ${i?'':'k'}"><span>${i?i+1+'.':'👑'} ${esc(e.name)}</span><span>${e.score}</span></div>`).join('');}
+function refresh(){
+  $('board').innerHTML=boardHtml();$('pot').textContent=store.pot+' $KRUNA';
+  $('bRank').textContent=store.bal>=TICKET?`Juri krunu · ${TICKET} $KRUNA`:'Dopuni demo novčanik';
+  $('bal').textContent=`novčanik ${store.bal} $KRUNA · tiket: ${SPLIT[0]} fond / ${SPLIT[1]} kuća / ${SPLIT[2]} spaljeno`;
+  const c=$('chal');c.classList.toggle('hide',!chal);
+  if(chal){c.innerHTML=`<div class="t">Izazov</div><div class="row k"><span>${esc(chal.name)}</span><span>${chal.score}</span></div><button id="bChal" style="margin-top:8px">Prihvati · besplatno</button>`;$('bChal').onclick=()=>startRun('duel');}
+}
+
+// ---------- igra ----------
+const R0=6,HW=2.4,TR=Math.PI*2/SIM.A,FOG=[.043,.024,.125];
+let mode='home',kind='free',S,M,pr0,G=null,gi=0,gd=0,gua=0,lgua=0,gz0=0,ghost=null;
+let dir=0,lastDir=0,ev=[],ua=0,lua=0,lz=0,lagv=0,acc=0,last=0,deadT=0,shake=0,time=0,parts=[],auto=false;
+const stars=[];{const r=SIM.rng(7);for(let i=0;i<170;i++)stars.push([r()%65536,11+r()%30,r()%330,.1+(r()%10)/60]);}
+function attract(){S=SIM.start(DAY);M={k:-1,e0:0,e1:0,greed:60};pr0=SIM.rng(1);ua=lua=lz=0;G=null;parts=[];}
+function startRun(k){
+  if(k==='rank'){if(store.bal<TICKET){store.bal=1000;save();refresh();return;}store.bal-=TICKET;store.pot+=SPLIT[0];store.tries++;save();}
+  kind=k;const seed=k==='rank'?DAY:k==='duel'?chal.seed:(Math.random()*4294967296)>>>0;
+  ghost=k==='rank'?board()[0]:k==='duel'?chal:null;
+  S=SIM.start(seed);ev=[];dir=lastDir=0;ua=lua=lz=0;lagv=0;acc=0;parts=[];deadT=0;auto=k==='auto';
+  if(auto){M={k:-1,e0:0,e1:0,greed:60};pr0=SIM.rng(1);ghost=bots[0];}
+  if(ghost){G=SIM.start(seed);gi=0;gd=0;gua=lgua=0;}else G=null;
+  mode='play';$('home').classList.add('hide');$('over').classList.add('hide');$('hud').classList.remove('hide');$('sc').textContent='0';$('mu').textContent='';
+  $('rv').innerHTML=ghost?`👑 ${esc(ghost.name)}<small>${ghost.score}</small>`:'trening';
+  beep(330,.15,'triangle',.1,660);
+}
+function toast(t){const e=$('toast');e.textContent=t;e.classList.remove('go');void e.offsetWidth;e.classList.add('go');}
+function tick(){
+  if(mode==='home'||auto){dir=SIM.policy(S,M,pr0);}
+  if(mode==='play'&&dir!==lastDir){ev.push([S.t,dir]);lastDir=dir;}
+  lua=ua;lz=S.z;SIM.step(S,dir);if(!S.dead)ua+=S.v;
+  if(G&&!G.dead){while(gi<ghost.ev.length&&ghost.ev[gi][0]<=G.t)gd=ghost.ev[gi++][1];lgua=gua;gz0=G.z;SIM.step(G,gd);if(!G.dead)gua+=G.v;else if(mode==='play')toast(`${ghost.name} je pao`);}
+  if(mode==='home'){if(S.dead||S.k>60)attract();return;}
+  const f=S.fx;
+  if(f&1){$('sc').textContent=S.score;const m=SIM.mult(S);$('mu').textContent=m>1?'×'+m:'';if(navigator.vibrate&&f&4)navigator.vibrate(8);}
+  if(f&2)beep(520+S.streak*40,.12,'triangle',.12);else if(f&1)beep(180,.05,'sine',.05);
+  if(f&4){toast('BLIZU +'+15*SIM.mult(S));beep(880,.1,'square',.05);}
+  if(f&8&&S.streak===0)$('mu').textContent='';
+  if(ghost&&f&1&&S.score>ghost.score&&S.score-10*SIM.mult(S)-40<=ghost.score)toast('👑 PRESTIGAO SI');
+  if(f&16){deadT=time;shake=1;beep(160,.5,'sawtooth',.2,40);if(navigator.vibrate)navigator.vibrate(60);
+    const a=(ua-cam())*TR,x=Math.sin(a)*(R0-.4),y=-Math.cos(a)*(R0-.4);for(let i=0;i<46;i++)parts.push({x,y,z:-S.z/1024,vx:(Math.random()-.5)*14,vy:(Math.random()-.2)*14,vz:-Math.random()*26,l:1,c:hsl(180+Math.random()*140,.9,.65)});}
+}
+function finish(){
+  mode='over';$('hud').classList.add('hide');$('over').classList.remove('hide');
+  const sc=S.score,ok=SIM.run(S.seed,ev).score===sc;let msg,st=`${S.k} kapija · ${S.shards} kristala · najviše ×${S.best} · zapis ${ok?'potvrđen ponovnom igrom':'NIJE potvrđen'}`;
+  if(kind==='rank'){const top=board()[0];const had=top.me;if(ok&&(!store.best||sc>store.best.score)){store.best={score:sc,rep:SIM.enc(ev)};save();}
+    const b=board(),pos=b.findIndex(e=>e.me)+1;
+    msg=b[0].me&&sc===b[0].score?(had?'Podigao si svoj rekord. Kruna ostaje.':'👑 KRUNA JE TVOJA'):b[0].me?'Kruna je i dalje tvoja.':`Fali ti ${b[0].score-sc+1} do ${b[0].name}`;st+=` · ${pos}. mesto`;
+    if(b[0].me&&!had)beep(523,.5,'triangle',.15,1046);
+  }else if(kind==='duel'){msg=sc>chal.score?`Srušio si ${chal.name} 👑`:`${chal.name} drži ${chal.score}. Fali ti ${chal.score-sc+1}.`;}
+  else msg='Trening. Kruna čeka.';
+  $('oSc').textContent=sc;$('oMsg').textContent=msg;$('oSt').textContent=st;$('oBoard').innerHTML=boardHtml();
+  $('bAgain').textContent=kind==='rank'?`Revanš · ${TICKET} $KRUNA`:'Još jednom';refresh();
+}
+function cam(){return ua-lagv;}
+function ship(phi,z,tilt,c1,c2,a,crown){
+  inst(phi,R0-.42,z,.5,.3,1.7,c1,a,.35,0,tilt);inst(phi,R0-.4,z,1.5,.08,.7,c2,a,.7,0,tilt,0,0,.45);inst(phi,R0-.4,z,.14,.5,.5,c2,a,.7,0,tilt,0,.25,.6);inst(phi,R0-.42,z,.32,.2,.3,[1,.6,.2],a,1,0,tilt,0,0,.95);
+  if(crown)for(let i=-1;i<=1;i++)inst(phi,R0-.42,z,.14,.3+(i?0:.14),.14,[1,.82,.29],1,1,0,tilt,i*.2,.55,0);
+}
+function draw(al){
+  gl.viewport(0,0,cv.width,cv.height);gl.clearColor(FOG[0],FOG[1],FOG[2],1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);n=0;
+  const pz=(lz+(S.z-lz)*al)/1024,pa=lua+(ua-lua)*al;lagv+=(S.v*(cv.width<cv.height?3.5:7)-lagv)*.12;const cm=pa-lagv,rel=a=>(a-cm)*TR,T=S.tr,spf=(SIM.speedAt(S.z)-410)/614;
+  for(let i=Math.max(0,S.k-1);;i++){
+    const R=T.ring(i),rz=R.z/1024;if(rz>pz+250)break;if(rz<pz-6)continue;
+    const cc=SIM.center(R,S.t),col=R.amp?hsl(318,.85,.6):hsl(262+50*Math.sin(i*.45),.8,.58),len=R.per-R.w,m=Math.ceil(len/1500),dl=len/m,tw=2*R0*Math.tan(dl*TR/2)*1.03;
+    for(let g=0;g<R.n;g++){const st=cc+g*R.per+R.w/2;
+      for(let j=0;j<m;j++)inst(rel(st+(j+.5)*dl),R0-HW/2,-rz,tw,HW,1,col,1,.22);
+      inst(rel(st),R0-HW/2,-rz,.16,HW+.25,1.15,[.75,1,1],1,1);inst(rel(st+len),R0-HW/2,-rz,.16,HW+.25,1.15,[.75,1,1],1,1);}
+    if(R.sh>=0&&!S.col[i]&&(i>S.k||(i===S.k&&!S.shDone)))inst(rel(R.sh),R0-1,-(rz-13),.55,.55,.55,[1,.82,.29],1,.9,time*3,time*2);
+  }
+  const j0=Math.floor(pz/26);
+  for(let j=j0-1;j<j0+10;j++){for(let q=0;q<16;q++)inst(rel(q*4096),R0+.15,-(j*26+13),.1,.1,26,[.35,.28,.8],1,.7);
+    const hw=2*R0*Math.tan(Math.PI/32)*1.05;for(let q=0;q<32;q++)inst(rel(q*2048+1024),R0+.15,-(j*26+13),hw,.08,.12,[.3,.5,.9],1,.7);}
+  for(const s of stars){const z=pz-20+(((s[2]-pz)%330)+330)%330;inst(rel(s[0]),s[1],-z,s[3],s[3],s[3],[1,1,1],1,1);}
+  for(const p of parts)inst(0,0,p.z,.28*p.l,.28*p.l,.28*p.l,p.c,1,1,p.l*9,p.l*7,p.x,p.y,0);
+  if(!S.dead)ship(rel(pa),-pz,-S.v/SIM.VMAX*.55,[.95,.95,1],[.3,.95,1],1,false);
+  if(G&&!G.dead&&mode==='play'){const gz=(gz0+(G.z-gz0)*al)/1024;if(Math.abs(gz-pz)<220)ship(rel(lgua+(gua-lgua)*al),-gz,-G.v/SIM.VMAX*.55,[1,.85,.4],[1,.7,.2],.45,true);}
+  const as=cv.width/cv.height,sx=(Math.random()-.5)*shake,sy=(Math.random()-.5)*shake;
+  const P=persp((as<1?84:62)*Math.PI/180+spf*.16,as,.1,420),V=lookAt([sx,-2.5+sy,-pz+7.5],[0,-3.7,-pz-26],-lagv*TR*.35);
+  gl.uniformMatrix4fv(uVP,false,new Float32Array(mul(P,V)));gl.uniform3fv(uFog,FOG);
+  gl.bindBuffer(gl.ARRAY_BUFFER,ib);gl.bufferSubData(gl.ARRAY_BUFFER,0,I.subarray(0,n*ST));gl.drawArraysInstanced(gl.TRIANGLES,0,36,n);
+}
+function frame(ts){
+  const dt=Math.min(.1,(ts-last)/1000||0);last=ts;time+=dt;acc+=dt*60;
+  while(acc>=1){acc-=1;if(!(S.dead&&mode!=='home'))tick();}
+  for(const p of parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.z+=p.vz*dt;p.l-=dt*.9;}parts=parts.filter(p=>p.l>0);shake*=.9;
+  if(mode==='play'&&S.dead&&time-deadT>1.1)finish();
+  draw(S.dead?1:acc);requestAnimationFrame(frame);
+}
+// ---------- ulaz ----------
+const ptr=new Map();
+function pd(){let d=0;for(const x of ptr.values())d=x<innerWidth/2?-1:1;if(!auto)dir=d;}
+cv.addEventListener('pointerdown',e=>{ptr.set(e.pointerId,e.clientX);pd();});
+addEventListener('pointerup',e=>{ptr.delete(e.pointerId);pd();});addEventListener('pointercancel',e=>{ptr.delete(e.pointerId);pd();});
+const keys={};addEventListener('keydown',e=>{keys[e.key]=1;kd();if(e.key===' '&&mode!=='play')startRun(kind==='auto'?'free':kind);});addEventListener('keyup',e=>{keys[e.key]=0;kd();});
+function kd(){if(auto)return;const l=keys.ArrowLeft||keys.a,r=keys.ArrowRight||keys.d;dir=l&&!r?-1:r&&!l?1:0;}
+$('bRank').onclick=()=>startRun('rank');$('bFree').onclick=()=>startRun('free');$('bAgain').onclick=()=>startRun(kind);
+$('bHome').onclick=()=>{mode='home';attract();$('over').classList.add('hide');$('home').classList.remove('hide');refresh();};
+$('bShare').onclick=async()=>{const url=location.origin+location.pathname+`?s=${S.seed}&n=${encodeURIComponent(me.name)}&r=${SIM.enc(ev)}`,text=`Držim ${S.score} u KRUNI. Skini mi je 👑`;
+  try{if(sdk){await sdk.actions.composeCast({text,embeds:[url]});return;}await navigator.clipboard.writeText(text+' '+url);$('bShare').textContent='Kopirano ✓';}catch(e){prompt('Link izazova',url);}};
+// Farcaster Mini App: aktivira se samo unutar klijenta
+(async()=>{try{if(window.parent===window&&!window.ReactNativeWebView)return;await new Promise((ok,no)=>{const s=document.createElement('script');s.src='vendor/farcaster-miniapp-sdk-0.3.0.min.js';s.onload=ok;s.onerror=no;document.head.appendChild(s);});sdk=window.miniapp.sdk;if(!(await sdk.isInMiniApp())){sdk=null;return;}await sdk.actions.ready();const cx=await sdk.context;if(cx&&cx.user){me={name:'@'+(cx.user.username||cx.user.fid),fid:cx.user.fid};refresh();}}catch(e){sdk=null;}})();
+attract();refresh();if(Q.get('auto')){startRun('auto');for(let i=0;i<(+Q.get('ff')||0);i++)tick();}requestAnimationFrame(frame);
+})();
+</script>
+</body></html>
